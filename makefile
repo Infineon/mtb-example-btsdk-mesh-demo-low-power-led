@@ -49,6 +49,7 @@ TARGET=CYW920819EVB-02
 SUPPORTED_TARGETS = \
   CYW920819EVB-02 \
   CYBT-213043-MESH \
+  CYBLE-343072-MESH \
   CYBT-243053-EVAL \
   CYBT-253059-EVAL \
   CYBT-223058-EVAL \
@@ -98,8 +99,10 @@ CY_APP_DEFINES += -DREMOTE_PROVISION_SERVER_SUPPORTED
 endif
 
 # value of the LOW_POWER_NODE defines mode. It can be normal node (0), or low power node (1)
+ifeq ($(filter $(TARGET), CYBLE-343072-MESH),)
 LOW_POWER_NODE ?= 0
 CY_APP_DEFINES += -DLOW_POWER_NODE=$(LOW_POWER_NODE)
+endif
 
 # If PTS is defined then device gets hardcoded BD address from make target
 # Otherwise it is random for all mesh apps.
@@ -109,6 +112,12 @@ PTS ?= 0
 ifeq ($(PTS),1)
 CY_APP_DEFINES += -DPTS
 endif # PTS
+
+# Enable Mesh Network Filter support - it is needed to simulate big distance between nodes for Directed Forwarding testing
+#CY_APP_DEFINES += -DNETWORK_FILTER_SERVER_SUPPORTED
+
+# Set hardcoded UUID - it can be needed for Directed Forwarding testing of the Low Power node
+#CY_APP_DEFINES += -DHARDCODED_UUID=0x4c,0xe1,0x57,0xc5,0xe6,0x17,0x46,0x23,0xaa,0xdf,0x63,0x94,0x12,0x43,0xda,0xab
 
 # These flags control whether the prebuilt mesh libs (core, models)
 # will be the trace enabled versions or not

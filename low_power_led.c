@@ -70,6 +70,9 @@
 #include "led_control.h"
 #include "wiced_hal_nvram.h"
 #include "wiced_hal_mia.h"
+#if defined(NETWORK_FILTER_SERVER_SUPPORTED)
+#include "wiced_bt_mesh_mdf.h"
+#endif
 
 
 #ifdef HCI_CONTROL
@@ -132,6 +135,9 @@ mesh_low_power_led_t app_state = { 0 };
 wiced_bt_mesh_core_config_model_t   mesh_element1_models[] =
 {
     WICED_BT_MESH_DEVICE,
+#ifdef NETWORK_FILTER_SERVER_SUPPORTED
+        WICED_BT_MESH_NETWORK_FILTER_SERVER,
+#endif
     WICED_BT_MESH_MODEL_USER_PROPERTY_SERVER,
     WICED_BT_MESH_MODEL_POWER_ONOFF_SERVER,
 };
@@ -312,6 +318,11 @@ void mesh_app_init(wiced_bool_t is_provisioned)
 
     led_control_init(LED_CONTROL_TYPE_ONOFF);
 
+#ifdef NETWORK_FILTER_SERVER_SUPPORTED
+    if (is_provisioned)
+        wiced_bt_mesh_network_filter_init();
+#endif
+
     wiced_bt_mesh_model_power_onoff_server_init(MESH_LOW_POWER_LED_ELEMENT_INDEX, mesh_low_power_led_message_handler, TRANSITION_INTERVAL, is_provisioned);
 
 #if defined(LOW_POWER_NODE) && (LOW_POWER_NODE == 1)
@@ -326,7 +337,9 @@ void mesh_app_init(wiced_bool_t is_provisioned)
         app_state.lpn_sleep_config.device_wake_gpio_num = WICED_GPIO_PIN_BUTTON;
         app_state.lpn_sleep_config.host_wake_mode = WICED_SLEEP_WAKE_ACTIVE_HIGH;
         app_state.lpn_sleep_config.sleep_permit_handler = mesh_low_power_led_sleep_poll;
+#if defined(CYW20819A1) || defined(CYW20820A1)
         app_state.lpn_sleep_config.post_sleep_cback_handler = NULL;
+#endif
 
         if (WICED_BT_SUCCESS != wiced_sleep_configure(&app_state.lpn_sleep_config))
         {
