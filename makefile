@@ -1,5 +1,5 @@
 #
-# Copyright 2016-2021, Cypress Semiconductor Corporation (an Infineon company) or
+# Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
 # an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 #
 # This software, including source code, documentation and related
@@ -56,7 +56,8 @@ SUPPORTED_TARGETS = \
   CYBT-273063-EVAL \
   CYBT-263065-EVAL \
   CYW920820EVB-02 \
-  CYBT-213043-EVAL
+  CYBT-213043-EVAL \
+  CYW920820M2EVB-01
 
 #
 # Advanced Configuration
@@ -97,6 +98,9 @@ CY_APP_DEFINES+=\
 ifeq ($(REMOTE_PROVISION_SRV),1)
 CY_APP_DEFINES += -DREMOTE_PROVISION_SERVER_SUPPORTED
 endif
+
+# Uncomment following line to add Time and Scheduler related models to the device
+# CY_APP_DEFINES += -DTIME_AND_SCHEDULER_SUPPORT
 
 # value of the LOW_POWER_NODE defines mode. It can be normal node (0), or low power node (1)
 ifeq ($(filter $(TARGET), CYBLE-343072-MESH),)
