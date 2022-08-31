@@ -35,12 +35,12 @@
  *
  * This demo application shows an implementation of a low_power_led system.
  * The app uses On/Off control because PWM is not supported in the low power states.
- * The app is based on the snip/mesh/mesh_power_onoff_server sample which implements generic BLE Mesh Power Onoff Server model.
+ * The app is based on the snip/mesh/mesh_power_onoff_server sample which implements generic LE Mesh Power Onoff Server model.
  *
  * Features demonstrated
  * - showcase a LPN + Server as well as a Friend node implementation in conjunction with the Proxy/Relay + Server (3x Lightbulb).
  *
- * See chip specific readme.txt for more information about the BT SDK.
+ * See chip specific readme.txt for more information about the Bluetooth SDK.
  *
  * To demonstrate the app, work through the following steps.
  * 1. Build and download the application (to the WICED board)
@@ -88,7 +88,6 @@ extern wiced_bt_cfg_settings_t wiced_bt_cfg_settings;
  ******************************************************/
 #define MESH_PID                0x3125
 #define MESH_VID                0x0002
-#define MESH_CACHE_REPLAY_SIZE  0x0008
 
 #define TRANSITION_INTERVAL     100     // receive status notifications every 100ms during transition to new state
 
@@ -181,7 +180,6 @@ wiced_bt_mesh_core_config_t  mesh_config =
     .company_id         = MESH_COMPANY_ID_CYPRESS,                  // Company identifier assigned by the Bluetooth SIG
     .product_id         = MESH_PID,                                 // Vendor-assigned product identifier
     .vendor_id          = MESH_VID,                                 // Vendor-assigned product version identifier
-    .replay_cache_size  = MESH_CACHE_REPLAY_SIZE,                   // Number of replay protection entries, i.e. maximum number of mesh devices that can send application messages to this device.
 #if defined(LOW_POWER_NODE) && (LOW_POWER_NODE == 1)
     .features           = WICED_BT_MESH_CORE_FEATURE_BIT_LOW_POWER, // A bit field indicating the device features. In Low Power mode no Relay, no Proxy and no Friend
     .friend_cfg         =                                           // Empty Configuration of the Friend Feature
@@ -362,9 +360,6 @@ void mesh_low_power_led_message_handler(uint8_t element_idx, uint16_t event, voi
     {
     case WICED_BT_MESH_ONOFF_STATUS:
         mesh_low_power_led_process_status(element_idx, (wiced_bt_mesh_onoff_status_data_t *)p_data);
-        break;
-
-    case WICED_BT_MESH_ONOFF_SET:
         break;
 
     default:
