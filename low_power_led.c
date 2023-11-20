@@ -1,5 +1,5 @@
 /*
-* Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -381,7 +381,17 @@ void mesh_low_power_led_process_status(uint8_t element_idx, wiced_bt_mesh_onoff_
 #if defined(LOW_POWER_NODE) && (LOW_POWER_NODE == 1)
 void mesh_low_power_led_lpn_sleep(uint32_t max_sleep_duration)
 {
-    // Generally speaking, if sleep timer bigger than 2mins, then hid-off will save more power. But it's up to your design.
+#if defined(CYW20835B1)
+	// Enter SDS (Shut Down Sleep) will save more power than PMU Sleep. But it's up to your design.
+	if(max_sleep_duration != WICED_SLEEP_MAX_TIME_TO_SLEEP)
+	{
+		wiced_stop_timer(&app_state.lpn_wake_timer);
+		wiced_start_timer(&app_state.lpn_wake_timer, max_sleep_duration);
+	}
+	WICED_BT_TRACE("Get ready to go into SDS, duration=%d\n\r", max_sleep_duration);
+	app_state.lpn_state = MESH_LPN_STATE_IDLE;
+#else
+	// Generally speaking, if sleep timer bigger than 2mins, then hid-off will save more power. But it's up to your design.
     if (max_sleep_duration < 120000)//2mins
     {
         wiced_stop_timer(&app_state.lpn_wake_timer);
@@ -397,6 +407,7 @@ void mesh_low_power_led_lpn_sleep(uint32_t max_sleep_duration)
             WICED_BT_TRACE("Entering HID-Off failed\n\r");
         }
     }
+#endif
 }
 
 /*
@@ -436,7 +447,11 @@ static uint32_t mesh_low_power_led_sleep_poll(wiced_sleep_poll_type_t type)
         if (app_state.lpn_state == MESH_LPN_STATE_IDLE)
         {
             WICED_BT_TRACE("#\n");
+#if defined(CYW20835B1)
+            ret = WICED_SLEEP_ALLOWED_WITH_SHUTDOWN;
+#else
             ret = WICED_SLEEP_ALLOWED_WITHOUT_SHUTDOWN;
+#endif
         }
 
         break;

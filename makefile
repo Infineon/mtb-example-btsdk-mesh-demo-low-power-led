@@ -1,5 +1,5 @@
 #
-# Copyright 2016-2022, Cypress Semiconductor Corporation (an Infineon company) or
+# Copyright 2016-2023, Cypress Semiconductor Corporation (an Infineon company) or
 # an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 #
 # This software, including source code, documentation and related
@@ -44,19 +44,14 @@ CONFIG=Debug
 VERBOSE=
 
 # default target
-TARGET=CYW920819EVB-02
+TARGET=CYW920819M2EVB-01
 
 SUPPORTED_TARGETS = \
   CYW920819EVB-02 \
+  CYW920819M2EVB-01 \
   CYBT-213043-MESH \
   CYBLE-343072-MESH \
-  CYBT-243053-EVAL \
-  CYBT-253059-EVAL \
-  CYBT-223058-EVAL \
-  CYBT-273063-EVAL \
-  CYBT-263065-EVAL \
   CYW920820EVB-02 \
-  CYBT-213043-EVAL \
   CYW920820M2EVB-01
 
 #
@@ -103,10 +98,8 @@ endif
 # CY_APP_DEFINES += -DTIME_AND_SCHEDULER_SUPPORT
 
 # value of the LOW_POWER_NODE defines mode. It can be normal node (0), or low power node (1)
-ifeq ($(filter $(TARGET), CYBLE-343072-MESH),)
 LOW_POWER_NODE ?= 0
 CY_APP_DEFINES += -DLOW_POWER_NODE=$(LOW_POWER_NODE)
-endif
 
 # If PTS is defined then device gets hardcoded BD address from make target
 # Otherwise it is random for all mesh apps.
@@ -150,8 +143,14 @@ COMPONENTS += mesh_models_lib
 endif
 
 # Chip-specific patch libs
-CY_20706A2_APP_PATCH_LIBS += rtc_lib.a
-CY_20706A2_APP_PATCH_LIBS += wiced_bt_mesh.a
+CY_20719B2_APP_PATCH_LIBS += mesh_optimized_continuous_scan_lib.a
+
+CY_20819A1_APP_PATCH_LIBS += mesh_optimized_continuous_scan_lib.a
+
+CY_20820A1_APP_PATCH_LIBS += mesh_optimized_continuous_scan_lib.a
+
+CY_20835B1_APP_PATCH_LIBS += mesh_optimized_continuous_scan_lib.a
+CY_20835B1_APP_PATCH_LIBS += wiced_bt_ble_lib.a
 
 ################################################################################
 # Paths
